@@ -1,0 +1,10 @@
+path: "C:\\Users\\MSI\\PycharmProjects\\Pupupu \u0445\u0430\u043A\\taco\\yolo_dataset"
+train: images/train
+val: images/val
+names:
+  0: Glass
+  1: Metal
+  2: Organic
+  3: Other
+  4: Paper
+  5: Plastic

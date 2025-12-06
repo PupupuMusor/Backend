@@ -1,0 +1,9 @@
+ultralytics
+opencv-python
+pillow
+requests
+pyyaml
+tqdm
+pandas
+matplotlib
+seaborn

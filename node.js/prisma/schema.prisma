@@ -1,0 +1,184 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String          @db.Uuid   @id @default(uuid())
+  email           String?         @unique
+  login           String          @unique
+  password        String?
+  fullName        String?         @map("full_name")
+  role            Role
+  attempt         Attempts[]
+
+  @@map("user")
+}
+
+model Tests {
+  id            String     @db.Uuid @id @default(uuid())
+  title         String
+  instruction   String?
+
+  testScales    TestScales[]
+  questions     Questions[]
+  attempts      Attempts[]
+
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+
+  @@map("tests")
+}
+
+model TestScales {
+  id          String   @db.Uuid @id @default(uuid())
+  testId      String   @db.Uuid
+  name        String
+
+  test        Tests     @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+  scoringRules           ScoringRules[]
+  scaleInterpretations   ScaleInterpretations[]
+  attemptScores          AttemptScores[]
+
+  @@map("test_scales")
+}
+
+model ScaleInterpretations {
+  id                 String   @db.Uuid @id @default(uuid())
+  minScore           Float    @map("min_score")  @default(0)
+  maxScore           Float    @map("max_score")
+  interpretation     String
+  testScaleId        String   @db.Uuid
+
+  testScales         TestScales     @relation(fields: [testScaleId], references: [id], onDelete: Cascade)
+
+  attemptScores      AttemptScores[]
+
+  @@map("scale_interpretations")
+}
+
+model Questions {
+  id          String   @db.Uuid @id @default(uuid())
+  testId      String   @db.Uuid
+  text        String
+  order       Int      @db.SmallInt
+  type        QuestionType
+
+  tests          Tests      @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+  answers        Answers[]
+  scoringRules   ScoringRules[]
+  userSelections UserSelections[]
+
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  
+  @@map("questions")
+}
+
+model ScoringRules {
+  id           String   @db.Uuid @id @default(uuid())
+  answerId     String?  @db.Uuid
+  questionId   String   @db.Uuid
+  testScaleId  String   @db.Uuid
+  supplyText   String?
+  score        Float    @default(0)
+
+  answers       Answers?       @relation(fields: [answerId], references: [id], onDelete: Cascade)
+  questions     Questions?     @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  testScales    TestScales     @relation(fields: [testScaleId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+
+  @@unique([answerId, testScaleId])
+  @@map("scoring_rules")
+}
+
+model Answers {
+  id          String   @db.Uuid @id @default(uuid())
+  questionId  String   @db.Uuid
+  text        String?
+  order       Int      @db.SmallInt
+
+  questions        Questions   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  scoringRules     ScoringRules[]
+  userSelections   UserSelectionAnswers[]
+
+  @@map("answers")
+}
+
+model Attempts {
+  id          String   @db.Uuid @id @default(uuid())
+  userId      String   @db.Uuid
+  testId      String   @db.Uuid
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tests       Tests    @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+  userSelections UserSelections[]
+  attemptScores AttemptScores[]
+
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, testId])
+  @@map("attempt")
+}
+
+model UserSelections {
+  id            String  @db.Uuid @id @default(uuid())
+  attemptId     String  @db.Uuid
+  questionId    String  @db.Uuid
+
+  attempts      Attempts    @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questions     Questions   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  answers       UserSelectionAnswers[]
+
+  @@unique([attemptId, questionId])
+  @@map("user_selection")
+}
+
+model AttemptScores {
+  id             String     @db.Uuid @id @default(uuid())
+  attemptId      String     @db.Uuid
+  testScaleId    String     @db.Uuid
+  score          Float      @default(0)
+  scaleInterpretationId   String?     @db.Uuid
+
+  attempts                      Attempts                    @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  testScales                    TestScales                  @relation(fields: [testScaleId], references: [id], onDelete: Cascade)
+  scaleInterpretations          ScaleInterpretations?       @relation(fields: [scaleInterpretationId], references: [id])
+
+  @@map("attempt_scores")
+}
+
+model UserSelectionAnswers {
+  id                String     @db.Uuid @id @default(uuid())
+  userSelectionId   String     @db.Uuid
+  answerId          String?    @db.Uuid
+  supplyText        String?
+
+  userSelections    UserSelections    @relation(fields: [userSelectionId], references: [id], onDelete: Cascade)
+  answers           Answers?          @relation(fields: [answerId], references: [id], onDelete: Cascade)
+
+  @@map("user_selection_answers")
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  SINGLE_CHOICE
+  SUPPLY_ANSWER
+}
+
+enum Role {
+  ADMIN
+  STAFF
+}

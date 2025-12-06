@@ -1,0 +1,13 @@
+{
+  "ignores": ["@common/*", "@infrastructure/*", "@nest/*", "@presentation/*"],
+  "skip-missing": true,
+  "ignore-bin-package": false,
+  "ignore-dirs": ["dist", "build", "coverage"],
+  "ignore-path": ".gitignore",
+  "parsers": {
+    "**/*.ts": "typescript",
+    "**/*.tsx": "typescript",
+    "**/*.js": "javascript",
+    "**/*.jsx": "javascript"
+  }
+}
