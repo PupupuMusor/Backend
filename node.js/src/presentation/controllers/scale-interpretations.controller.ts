@@ -21,7 +21,6 @@ import {
 import {
   CreateScaleInterpretationDto,
   ResponseScaleInterpretation,
-  ResponseScaleInterpretationWithProfessions,
   UpdateScaleInterpretationDto,
 } from '@presentation/dto/scale-interpretation.dto';
 import { IScaleInterpretationsService } from '@use-cases/scale-interpretations/scale-interpretations.interface.service';
@@ -87,22 +86,6 @@ export class ScaleInterpretationsController {
   })
   async getAll(): Promise<ResponseScaleInterpretation[]> {
     return this.scaleInterpretationsService.findAll();
-  }
-
-  @Get(':testId')
-  @Auth(['ADMIN', 'STAFF'])
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Получение интерпретации по ID теста' })
-  @ApiParam({ name: 'testId', description: 'ID теста', required: true })
-  @ApiResponse({
-    status: 200,
-    description: 'Получение прошло успешно',
-    type: [ResponseScaleInterpretationWithProfessions],
-  })
-  async findByTestId(
-    @Param('testId') testId: string,
-  ): Promise<ResponseScaleInterpretationWithProfessions[]> {
-    return this.scaleInterpretationsService.findByTestId(testId);
   }
 
   @Patch('one/:id')

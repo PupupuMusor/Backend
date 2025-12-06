@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql" // Assuming PostgreSQL as it's common with NestJS/Prisma, but could be SQL Server. I'll stick to Postgres or SQLite. Let's use Postgres as default.
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

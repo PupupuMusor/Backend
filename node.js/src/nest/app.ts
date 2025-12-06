@@ -1,7 +1,6 @@
 import { AppModule } from '@/app.module';
 import { isDev } from '@common/utils';
 import { ExceptionsFilter } from '@nest/filters/exception.filter';
-import { ClientExceptionsInterceptor } from 'src/nest/interceptors';
 import {
   INestApplication,
   Logger,
@@ -12,7 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
-import Parser from '@common/utils/parser';
+import { ClientExceptionsInterceptor } from 'src/nest/interceptors';
 export class App {
   private readonly app: INestApplication;
   private readonly logger: Logger;
@@ -24,7 +23,6 @@ export class App {
   private readonly swaggerPath: string;
   private readonly origin: string;
   private readonly configService: ConfigService;
-  private parser: Parser;
 
   constructor(app: INestApplication) {
     this.app = app;
@@ -106,18 +104,7 @@ export class App {
     if (isDev()) {
       this.logger.log(`Server is running on port ${this.apiPort}`);
     }
-    await this.runParser();
     return this;
-  }
-
-  private async runParser() {
-    try {
-      this.parser = new Parser('professional.json', 'areas.json');
-      await this.parser.parseTable();
-      this.logger.log(`Парсер отработал`);
-    } catch (error) {
-      this.logger.error(`Парсер не отработал: ${error.message}`);
-    }
   }
 
   public static async run() {

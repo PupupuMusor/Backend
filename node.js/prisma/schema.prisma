@@ -16,6 +16,8 @@ model User {
   fullName        String?         @map("full_name")
   role            Role
   attempt         Attempts[]
+  userWeeklyStats UserWeeklyStats[]
+  usersAchievements UsersAchievements[]
 
   @@map("user")
 }
@@ -170,6 +172,39 @@ model UserSelectionAnswers {
   answers           Answers?          @relation(fields: [answerId], references: [id], onDelete: Cascade)
 
   @@map("user_selection_answers")
+}
+
+model Achievement {
+  id           String            @db.Uuid  @id @default(uuid())
+  name         String
+  description  String
+  pointsReward Int
+  iconPath     String?
+
+  users        UsersAchievements[]
+
+  @@map("achievement")
+}
+
+model UsersAchievements {
+  userId        String @db.Uuid
+  achievementId String @db.Uuid
+
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, achievementId])
+  @@map("users_achievements")
+}
+
+model UserWeeklyStats {
+  userId        String   @id @db.Uuid
+  points        Int
+  weekStartDate DateTime
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_weekly_stats")
 }
 
 enum QuestionType {

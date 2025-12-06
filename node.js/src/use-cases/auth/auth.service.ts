@@ -13,7 +13,7 @@ import {
   AuthRegisterDto,
   ChangePasswordDto,
 } from '@presentation/dto/auth.dto';
-import { Role, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { IAuthService } from '@use-cases/auth/auth.interface';
 import { ITokensService } from '@use-cases/tokens/tokens.service.interface';
 import { IUserService } from '@use-cases/user/user.service.interface';
@@ -49,10 +49,6 @@ export class AuthService implements IAuthService {
 
     if (!isValidPassword) {
       throw new NotFoundException('неправильный пароль');
-    }
-
-    if (!user.isConfirm) {
-      throw new UnauthorizedException('Почта не подтверждена');
     }
 
     return this.auth(res, user.id);
@@ -158,7 +154,7 @@ export class AuthService implements IAuthService {
   ): Promise<{ resetTokenRaw: string }> {
     const user = await this.userService.findByEmail(email);
 
-    if (!user || user.role === Role.STUDENT) {
+    if (!user) {
       throw new NotFoundException('Пользователя не существует');
     }
     const entry = await verifyCode(user.id, 'password_reset', email, code);

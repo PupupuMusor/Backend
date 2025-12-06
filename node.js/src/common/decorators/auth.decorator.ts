@@ -6,7 +6,7 @@ import { Role } from '@prisma/client';
 
 export type TypeRole = Role | Role[];
 
-export function Auth(roles: TypeRole = [Role.APPLICANT]) {
+export function Auth(roles: TypeRole = [Role.STAFF]) {
   const rolesArray = Array.isArray(roles) ? roles : [roles];
   return applyDecorators(
     UseGuards(JwtAuthGuard, new RoleGuard(new Reflector(), rolesArray)),

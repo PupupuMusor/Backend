@@ -26,7 +26,6 @@ import {
   ChangePasswordDto,
   ConfirmResetPasswordDto,
   RecoveryPasswordDto,
-  ResetPasswordDto,
 } from '@presentation/dto/auth.dto';
 import { User } from '@prisma/client';
 import { IAuthService } from '@use-cases/auth/auth.interface';
@@ -56,17 +55,6 @@ export class AuthController {
   @Post('register')
   async register(@Res() res: Response, @Body() dto: AuthRegisterDto) {
     const result = await this.authService.register(dto);
-    return res.status(201).json(result);
-  }
-
-  @Public()
-  @ApiOperation({ summary: 'Отправка кода для сброса пароля' })
-  @ApiBody({ type: ResetPasswordDto })
-  @ApiResponse({ status: 201, description: 'Код отправлен на email' })
-  @ApiResponse({ status: 404, description: 'Пользователь не найден' })
-  @Post('resetPassword')
-  async resetPassword(@Body() dto: ResetPasswordDto, @Res() res: Response) {
-    const result = await this.authService.resetPassword(dto.email);
     return res.status(201).json(result);
   }
 
