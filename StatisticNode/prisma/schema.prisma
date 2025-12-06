@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // Assuming PostgreSQL as it's common with NestJS/Prisma, but could be SQL Server. I'll stick to Postgres or SQLite. Let's use Postgres as default.
+  url      = env("DATABASE_URL")
+}
+
+model Achievement {
+  id           String              @id @default(uuid())
+  name         String
+  description  String
+  pointsReward Int
+  iconPath     String?
+  users        UsersAchievements[]
+}
+
+model UsersAchievements {
+  userId        String
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@id([userId, achievementId])
+}
+
+model UserWeeklyStats {
+  userId        String   @id
+  points        Int
+  weekStartDate DateTime
+}
