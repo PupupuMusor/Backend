@@ -46,7 +46,7 @@ export class App {
     });
     this.app.enableCors({
       credentials: true,
-      origin: isDev() ? 'http://localhost:3001' : this.origin,
+      origin: true,
     });
     return this;
   }
