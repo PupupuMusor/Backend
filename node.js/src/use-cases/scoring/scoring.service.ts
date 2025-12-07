@@ -1,6 +1,9 @@
 import { PrismaService } from '@infrastructure/db/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { CalculatePointsDto } from '@presentation/dto/scoring.dto';
+import {
+  CalculatePointsDto,
+  PlusScoresDto,
+} from '@presentation/dto/scoring.dto';
 import { IScoringService } from './scoring.service.interface';
 
 @Injectable()
@@ -45,5 +48,19 @@ export class ScoringService implements IScoringService {
       points: earnedPoints,
       totalPoints: updatedUser.scores,
     };
+  }
+
+  async plusScores(login: string, dto: PlusScoresDto) {
+    return await this.prisma.user.update({
+      where: { login: login },
+      data: {
+        scores: {
+          increment: dto.scores,
+        },
+      },
+      select: {
+        scores: true,
+      },
+    });
   }
 }

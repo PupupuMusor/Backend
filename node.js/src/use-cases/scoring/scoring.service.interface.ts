@@ -1,3 +1,5 @@
+import { PlusScoresDto } from '@presentation/dto/scoring.dto';
+
 export interface IScoringService {
   calculateScores(
     login: string,
@@ -6,4 +8,5 @@ export interface IScoringService {
     points: number;
     totalPoints: number;
   }>;
+  plusScores(login: string, dto: PlusScoresDto);
 }

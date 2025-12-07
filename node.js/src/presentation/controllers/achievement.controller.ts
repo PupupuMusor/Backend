@@ -1,3 +1,4 @@
+import { ACHIEVEMENT_SERVICE_SYMBOL } from '@common/constants';
 import {
   Body,
   Controller,
@@ -5,13 +6,15 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   NotFoundException,
   Param,
   Post,
   Put,
 } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import {
+  AchievementResponseDto,
   CreateAchievementDto,
   UpdateAchievementDto,
 } from '@presentation/dto/achievement.dto';
@@ -19,7 +22,10 @@ import { IAchievementService } from '@use-cases/achievement/achievement.service.
 
 @Controller('achievement')
 export class AchievementController {
-  constructor(private readonly achievementService: IAchievementService) {}
+  constructor(
+    @Inject(ACHIEVEMENT_SERVICE_SYMBOL)
+    private readonly achievementService: IAchievementService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: '' })
@@ -28,7 +34,28 @@ export class AchievementController {
   }
 
   @Get()
-  @ApiOperation({ summary: '' })
+  @ApiOperation({ summary: 'Получить все достижения с пользователями' })
+  @ApiResponse({
+    status: 200,
+    description: 'Список достижений с пользователями',
+    type: [AchievementResponseDto],
+    example: [
+      {
+        id: '123e4567-e89b-12d3-a456-426614174000',
+        name: 'Первый тест',
+        description: 'Завершить первый тест в системе',
+        pointsReward: 50,
+        iconPath: '/icons/first-test.png',
+        userIds: [
+          {
+            userId: '123e4567-e89b-12d3-a456-426614174001',
+            login: 'ivanov',
+            fullName: 'Иванов Иван',
+          },
+        ],
+      },
+    ],
+  })
   findAll() {
     return this.achievementService.findAll();
   }

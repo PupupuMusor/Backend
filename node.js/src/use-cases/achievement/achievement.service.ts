@@ -1,5 +1,9 @@
 import { PrismaService } from '@infrastructure/db/prisma.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   AssignAchievementDto,
   CreateAchievementDto,
@@ -12,9 +16,31 @@ export class AchievementService implements IAchievementService {
   constructor(private prisma: PrismaService) {}
 
   async findAll() {
-    return this.prisma.achievement.findMany();
-  }
+    const achievements = await this.prisma.achievement.findMany({
+      include: {
+        user: {
+          include: {
+            user: true,
+          },
+        },
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
 
+    return achievements.map((achievement) => ({
+      id: achievement.id,
+      name: achievement.name,
+      description: achievement.description,
+      pointsReward: achievement.pointsReward,
+      userIds: achievement.user.map((userAchievement) => ({
+        userId: userAchievement.user.id,
+        login: userAchievement.user.login,
+        fullName: userAchievement.user.fullName,
+      })),
+    }));
+  }
   async findOne(id: string) {
     const achievement = await this.prisma.achievement.findUnique({
       where: { id },
@@ -57,6 +83,14 @@ export class AchievementService implements IAchievementService {
   async assignToUser(dto: AssignAchievementDto) {
     const { userId, achievementId } = dto;
 
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
     const achievement = await this.prisma.achievement.findUnique({
       where: { id: achievementId },
     });
@@ -65,27 +99,56 @@ export class AchievementService implements IAchievementService {
       throw new NotFoundException('Achievement not found');
     }
 
-    const userAchievement = await this.prisma.userAchievements.upsert({
-      where: {
-        userId_achievementId: {
+    const result = await this.prisma.$transaction(async (tx) => {
+      const existingAchievement = await tx.userAchievements.findUnique({
+        where: {
+          userId_achievementId: {
+            userId,
+            achievementId,
+          },
+        },
+      });
+
+      if (existingAchievement) {
+        throw new ConflictException('User already has this achievement');
+      }
+
+      const userAchievement = await tx.userAchievements.create({
+        data: {
           userId,
           achievementId,
         },
-      },
-      update: {},
-      create: {
-        userId,
-        achievementId,
-      },
-      include: {
-        achievement: true,
-      },
+        include: {
+          achievement: true,
+        },
+      });
+
+      const updatedUser = await tx.user.update({
+        where: { id: userId },
+        data: {
+          scores: {
+            increment: achievement.pointsReward,
+          },
+        },
+        select: {
+          id: true,
+          login: true,
+          scores: true,
+        },
+      });
+
+      return {
+        userAchievement,
+        updatedUser,
+      };
     });
 
     return {
-      userId: userAchievement.userId,
-      achievementId: userAchievement.achievementId,
-      achievement: userAchievement.achievement,
+      userId: result.userAchievement.userId,
+      achievementId: result.userAchievement.achievementId,
+      achievement: result.userAchievement.achievement,
+      pointsAdded: achievement.pointsReward,
+      newTotalScore: result.updatedUser.scores,
     };
   }
 

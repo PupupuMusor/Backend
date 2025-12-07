@@ -12,5 +12,6 @@ import { AchievementService } from '@use-cases/achievement/achievement.service';
       useClass: AchievementService,
     },
   ],
+  exports: [ACHIEVEMENT_SERVICE_SYMBOL],
 })
 export class AchievementModule {}

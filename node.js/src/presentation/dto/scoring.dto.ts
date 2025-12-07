@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMinSize, IsArray, IsUUID } from 'class-validator';
+import { ArrayMinSize, IsArray, IsInt, IsUUID } from 'class-validator';
 
 export class CalculatePointsDto {
   @ApiProperty({
@@ -17,4 +17,14 @@ export class CalculatePointsDto {
     message: 'Каждый ID ответа должен быть валидным UUID',
   })
   answerIds: string[];
+}
+
+export class PlusScoresDto {
+  @ApiProperty({
+    description: 'Баллы',
+    example: 1,
+    type: Number,
+  })
+  @IsInt({ message: 'Баллы должны быть целым числом' })
+  scores: number;
 }

@@ -1,6 +1,8 @@
+import { WEEKLY_STATS_SERVICE_SYMBOL } from '@common/constants';
 import {
   Controller,
   Get,
+  Inject,
   NotFoundException,
   ParseIntPipe,
   Query,
@@ -10,6 +12,7 @@ import { UserWeeklyStatsService } from '@use-cases/weekly-stats/user-weekly-stat
 @Controller('api/UserWeeklyStats')
 export class UserWeeklyStatsController {
   constructor(
+    @Inject(WEEKLY_STATS_SERVICE_SYMBOL)
     private readonly userWeeklyStatsService: UserWeeklyStatsService,
   ) {}
 
