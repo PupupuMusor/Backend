@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsNotEmpty,
   IsNumber,
@@ -28,7 +28,7 @@ export class AnswerResponseDto {
   @ApiProperty({ description: 'ID ответа', required: false })
   @IsOptional()
   @IsUUID()
-  id?: string;
+  id: string;
 
   @ApiProperty({ description: 'ID вопроса' })
   @IsNotEmpty({ message: 'Поле questionId не должно быть пустым' })
@@ -39,11 +39,6 @@ export class AnswerResponseDto {
   @IsNotEmpty({ message: 'Поле text не должно быть пустым' })
   @IsString()
   text: string;
-
-  @ApiPropertyOptional({ description: 'Порядок ответа' })
-  @IsOptional()
-  @IsNumber()
-  order?: number;
 }
 
 export class CreateAnswersWithQuestionDto {

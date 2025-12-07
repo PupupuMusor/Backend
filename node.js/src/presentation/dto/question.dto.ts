@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -81,9 +82,13 @@ export class ResponseQuestionDto {
   @IsString()
   text: string;
 
-  @ApiProperty({ description: 'Порядок отображения вопроса', example: 1 })
-  @IsNumber()
-  order: number;
+  @ApiProperty({
+    description: 'Баллы за вопрос',
+    example: 5,
+  })
+  @IsNotEmpty({ message: 'Поле score не должно быть пустым' })
+  @IsInt()
+  scores: number;
 
   @ApiProperty({
     description: 'Ответы на вопрос',
