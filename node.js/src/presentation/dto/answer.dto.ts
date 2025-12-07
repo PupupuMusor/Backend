@@ -1,17 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   IsUUID,
-  ValidateNested,
 } from 'class-validator';
-import {
-  CreateScoringRuleDto,
-  ResponseScoringRuleDto,
-} from './scoring-rules.dto';
 
 export class CreateAnswerDto {
   @ApiProperty({ description: 'Текст варианта ответа', example: 'Вариант 1' })
@@ -22,6 +16,12 @@ export class CreateAnswerDto {
   @ApiProperty({ description: 'Порядок отображения варианта', example: 1 })
   @IsNumber()
   order: number;
+
+  @ApiProperty({})
+  scores: number;
+
+  @ApiProperty({})
+  isRight: Boolean;
 }
 
 export class AnswerResponseDto {
@@ -44,16 +44,6 @@ export class AnswerResponseDto {
   @IsOptional()
   @IsNumber()
   order?: number;
-
-  @ApiProperty({
-    description: 'Правила начисления баллов за этот ответ',
-    required: false,
-    type: ResponseScoringRuleDto,
-  })
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => ResponseScoringRuleDto)
-  scoringRules?: ResponseScoringRuleDto;
 }
 
 export class CreateAnswersWithQuestionDto {
@@ -62,19 +52,9 @@ export class CreateAnswersWithQuestionDto {
   @IsString()
   text: string;
 
-  @ApiProperty({ description: 'Порядок ответа' })
-  @IsNumber()
-  order: number;
-
-  @ApiProperty({
-    description: 'Правила начисления баллов за этот ответ',
-    required: false,
-    type: CreateScoringRuleDto,
-  })
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => CreateScoringRuleDto)
-  scoringRules?: CreateScoringRuleDto;
+  @ApiProperty({ description: 'Баллы' })
+  @IsNotEmpty({ message: 'Поле score не должно быть пустым' })
+  score: number;
 }
 
 export class UpdateAnswersWithQuestionDto {
@@ -92,14 +72,4 @@ export class UpdateAnswersWithQuestionDto {
   @IsOptional()
   @IsNumber()
   order?: number;
-
-  @ApiProperty({
-    description: 'Правила начисления баллов за этот ответ',
-    required: false,
-    type: CreateScoringRuleDto,
-  })
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => CreateScoringRuleDto)
-  scoringRules?: CreateScoringRuleDto;
 }

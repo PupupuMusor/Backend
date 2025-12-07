@@ -1,10 +1,6 @@
 import { PrismaService } from '@infrastructure/db/prisma.service';
 import { Injectable } from '@nestjs/common';
-import {
-  CreateUserDto,
-  ResponseUserDto,
-  ResponseUserScoreDto,
-} from '@presentation/dto/user.dto';
+import { CreateUserDto, ResponseUserDto } from '@presentation/dto/user.dto';
 import { User } from '@prisma/client';
 import { IUserService } from '@use-cases/user/user.service.interface';
 
@@ -44,7 +40,7 @@ export class UserService implements IUserService {
     return user;
   }
 
-  async findAll(): Promise<ResponseUserScoreDto[]> {
+  async findAll(): Promise<ResponseUserDto[]> {
     return await this.prismaService.user.findMany({});
   }
 }

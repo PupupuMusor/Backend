@@ -1,9 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { QuestionType } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   IsArray,
-  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -26,11 +24,6 @@ export class CreateQuestionWithAnswersDto {
   @ApiProperty({ description: 'Порядок вопроса' })
   @IsNumber()
   order: number;
-
-  @ApiProperty({ description: 'Тип вопроса', enum: QuestionType })
-  @IsNotEmpty({ message: 'Поле type не должно быть пустым' })
-  @IsEnum(QuestionType)
-  type: QuestionType;
 
   @ApiProperty({
     description: 'Ответы на вопрос',
@@ -60,11 +53,6 @@ export class UpdateQuestionWithAnswersDto {
   @IsOptional()
   @IsNumber()
   order?: number;
-
-  @ApiProperty({ description: 'Тип вопроса', enum: QuestionType })
-  @IsOptional()
-  @IsEnum(QuestionType)
-  type?: QuestionType;
 
   @ApiProperty({
     description: 'Ответы на вопрос',
@@ -96,10 +84,6 @@ export class ResponseQuestionDto {
   @ApiProperty({ description: 'Порядок отображения вопроса', example: 1 })
   @IsNumber()
   order: number;
-
-  @ApiProperty({ description: 'Тип вопроса', enum: QuestionType })
-  @IsNotEmpty({ message: 'Поле type не должно быть пустым' })
-  type: QuestionType;
 
   @ApiProperty({
     description: 'Ответы на вопрос',

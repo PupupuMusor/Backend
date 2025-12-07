@@ -1,8 +1,4 @@
-import {
-  CreateUserDto,
-  ResponseUserDto,
-  ResponseUserScoreDto,
-} from '@presentation/dto/user.dto';
+import { CreateUserDto, ResponseUserDto } from '@presentation/dto/user.dto';
 import { User } from '@prisma/client';
 
 export interface IUserService {
@@ -12,5 +8,5 @@ export interface IUserService {
   findByLogin(login: string): Promise<User>;
   findByEmailLogin(email: string, login: string): Promise<User>;
   findByLoginFront(login: string): Promise<ResponseUserDto>;
-  findAll(): Promise<ResponseUserScoreDto[]>;
+  findAll(): Promise<ResponseUserDto[]>;
 }
