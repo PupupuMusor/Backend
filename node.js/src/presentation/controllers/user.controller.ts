@@ -1,12 +1,6 @@
 import { USER_SERVICE_SYMBOL } from '@common/constants';
-import { CurrentUser } from '@common/decorators/user.decorator';
 import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiQuery,
-  ApiResponse,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { CreateUserDto } from '@presentation/dto/user.dto';
 import { IUserService } from '@use-cases/user/user.service.interface';
 
@@ -18,7 +12,6 @@ export class UsersController {
   ) {}
 
   @Post('')
-  @ApiBearerAuth()
   @ApiOperation({ summary: 'Создание пользователя' })
   @ApiResponse({ status: 201, description: 'Пользователь успешно создан' })
   async create(@Body() dto: CreateUserDto) {
@@ -43,13 +36,5 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Пользователь успешно получен' })
   async getByLogin(@Query('login') login: string) {
     return await this.userService.findByLoginFront(login);
-  }
-
-  @Get('self')
-  @ApiOperation({ summary: 'Получение пользователя по токену' })
-  @ApiResponse({ status: 200, description: 'Пользователь успешно получен' })
-  @ApiResponse({ status: 404, description: 'пользователь не найден' })
-  async self(@CurrentUser('id') id: string) {
-    return await this.userService.findById(id);
   }
 }

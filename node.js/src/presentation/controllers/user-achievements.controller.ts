@@ -1,29 +1,29 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Param,
+  Controller,
   Delete,
-  NotFoundException,
+  Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
+  Param,
+  Post,
 } from '@nestjs/common';
-import { AchievementsService } from '../achievements/achievements.service';
-import { AssignAchievementDto } from '../achievements/dto/assign-achievement.dto';
+import { AssignAchievementDto } from '@presentation/dto/achievement.dto';
+import { IAchievementService } from '@use-cases/achievement/achievement.service.interface';
 
 @Controller('api/UserAchievement')
 export class UserAchievementsController {
-  constructor(private readonly achievementsService: AchievementsService) {}
+  constructor(private readonly achievementService: IAchievementService) {}
 
   @Post('assign')
   assignAchievement(@Body() assignAchievementDto: AssignAchievementDto) {
-    return this.achievementsService.assignToUser(assignAchievementDto);
+    return this.achievementService.assignToUser(assignAchievementDto);
   }
 
   @Get(':userId')
   getUserAchievements(@Param('userId') userId: string) {
-    return this.achievementsService.getUserAchievements(userId);
+    return this.achievementService.getUserAchievements(userId);
   }
 
   @Delete(':userId/:achievementId')
@@ -32,7 +32,7 @@ export class UserAchievementsController {
     @Param('userId') userId: string,
     @Param('achievementId') achievementId: string,
   ) {
-    const success = await this.achievementsService.removeFromUser(
+    const success = await this.achievementService.removeFromUser(
       userId,
       achievementId,
     );

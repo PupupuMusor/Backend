@@ -19,6 +19,7 @@ model User {
   userWeeklyStats  UserWeeklyStats[]
   UserSelections   UserSelections[]
   userAchievements UserAchievements[]
+  
   office           Office   @relation(fields: [officeId], references: [id], onDelete: Cascade)
 
   @@map("user")
@@ -35,6 +36,7 @@ model Office {
 model Questions {
   id          String   @db.Uuid @id @default(uuid())
   text        String
+  scores       Int
 
   answers        Answers[]
 
@@ -48,11 +50,11 @@ model Answers {
   id          String   @db.Uuid @id @default(uuid())
   questionId  String   @db.Uuid
   text        String?
-  scores       Int
   isRight     Boolean
 
-  questions        Questions   @relation(fields: [questionId], references: [id], onDelete: Cascade)
   userSelection    UserSelections[]
+
+  questions        Questions   @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@map("answers")
 }

@@ -1,6 +1,6 @@
+import { WeeklyLeaderboardJob } from '@common/utils/weekly-leaderboard.job';
 import { Module } from '@nestjs/common';
-import { WeeklyLeaderboardJob } from './weekly-leaderboard.job';
-import { UserWeeklyStatsModule } from '../user-weekly-stats/user-weekly-stats.module';
+import { UserWeeklyStatsModule } from './user-weekly-stats.module';
 
 @Module({
   imports: [UserWeeklyStatsModule],

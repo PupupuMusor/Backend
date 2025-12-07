@@ -1,9 +1,17 @@
-import { Controller, Get, Query, NotFoundException, ParseIntPipe } from '@nestjs/common';
-import { UserWeeklyStatsService } from './user-weekly-stats.service';
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
+import { UserWeeklyStatsService } from '@use-cases/weekly-stats/user-weekly-stats.service';
 
 @Controller('api/UserWeeklyStats')
 export class UserWeeklyStatsController {
-  constructor(private readonly userWeeklyStatsService: UserWeeklyStatsService) {}
+  constructor(
+    private readonly userWeeklyStatsService: UserWeeklyStatsService,
+  ) {}
 
   @Get()
   async findAll(

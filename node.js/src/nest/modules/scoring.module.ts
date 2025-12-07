@@ -1,9 +1,10 @@
 import { SCORING_SERVICE_SYMBOL } from '@common/constants';
 import { Module } from '@nestjs/common';
+import { ScoringController } from '@presentation/controllers/scoring.controller';
 import { ScoringService } from '@use-cases/scoring';
 
 @Module({
-  controllers: [],
+  controllers: [ScoringController],
   imports: [],
   providers: [
     {

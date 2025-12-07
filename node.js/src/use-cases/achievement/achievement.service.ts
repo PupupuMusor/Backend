@@ -1,11 +1,14 @@
+import { PrismaService } from '@infrastructure/db/prisma.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
-import { CreateAchievementDto } from './dto/create-achievement.dto';
-import { UpdateAchievementDto } from './dto/update-achievement.dto';
-import { AssignAchievementDto } from './dto/assign-achievement.dto';
+import {
+  AssignAchievementDto,
+  CreateAchievementDto,
+  UpdateAchievementDto,
+} from '@presentation/dto/achievement.dto';
+import { IAchievementService } from './achievement.service.interface';
 
 @Injectable()
-export class AchievementsService {
+export class AchievementService implements IAchievementService {
   constructor(private prisma: PrismaService) {}
 
   async findAll() {
@@ -29,7 +32,9 @@ export class AchievementsService {
   }
 
   async update(id: string, updateAchievementDto: UpdateAchievementDto) {
-    const existing = await this.prisma.achievement.findUnique({ where: { id } });
+    const existing = await this.prisma.achievement.findUnique({
+      where: { id },
+    });
     if (!existing) return null;
 
     return this.prisma.achievement.update({
@@ -51,8 +56,7 @@ export class AchievementsService {
 
   async assignToUser(dto: AssignAchievementDto) {
     const { userId, achievementId } = dto;
-    
-    // Check if achievement exists
+
     const achievement = await this.prisma.achievement.findUnique({
       where: { id: achievementId },
     });
@@ -61,11 +65,7 @@ export class AchievementsService {
       throw new NotFoundException('Achievement not found');
     }
 
-    // Create relation
-    // Prisma create throws if unique constraint violated (already assigned), so we might want to use upsert or ignore
-    // C# code just adds it.
-    
-    const userAchievement = await this.prisma.usersAchievements.upsert({
+    const userAchievement = await this.prisma.userAchievements.upsert({
       where: {
         userId_achievementId: {
           userId,
@@ -90,7 +90,7 @@ export class AchievementsService {
   }
 
   async getUserAchievements(userId: string) {
-    const userAchievements = await this.prisma.usersAchievements.findMany({
+    const userAchievements = await this.prisma.userAchievements.findMany({
       where: { userId },
       include: {
         achievement: true,
@@ -102,7 +102,7 @@ export class AchievementsService {
 
   async removeFromUser(userId: string, achievementId: string) {
     try {
-      await this.prisma.usersAchievements.delete({
+      await this.prisma.userAchievements.delete({
         where: {
           userId_achievementId: {
             userId,
