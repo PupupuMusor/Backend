@@ -37,7 +37,6 @@ model Office {
 model Questions {
   id          String   @db.Uuid @id @default(uuid())
   text        String
-  scores       Int
 
   answers        Answers[]
 

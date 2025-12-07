@@ -28,7 +28,7 @@ export class ScoringService implements IScoringService {
 
     for (const answer of answers) {
       if (answer.isRight) {
-        earnedPoints += answer.questions.scores;
+        earnedPoints += 1;
       }
     }
 
