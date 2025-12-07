@@ -1,9 +1,13 @@
-import { CreateUserDto, ResponseUserDto } from '@presentation/dto/user.dto';
+import {
+  CreateOfficeDto,
+  CreateUserDto,
+  ResponseUserDto,
+} from '@presentation/dto/user.dto';
 import { User } from '@prisma/client';
 
 export interface IUserService {
   create(data: CreateUserDto): Promise<User>;
-  createOffice();
+  createOffice(createOfficeDto: CreateOfficeDto);
   findById(id: string): Promise<ResponseUserDto>;
   findByEmail(email: string): Promise<ResponseUserDto>;
   findByLogin(login: string): Promise<User>;

@@ -55,6 +55,16 @@ export class CreateUserDto {
   scores: number;
 }
 
+export class CreateOfficeDto {
+  @ApiProperty({
+    description: 'Название офиса',
+    example: 'Главный офис',
+  })
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+}
+
 export class ResponseUserDto {
   @ApiProperty({ description: 'ID теста' })
   @IsUUID()

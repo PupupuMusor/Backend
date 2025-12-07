@@ -1,7 +1,7 @@
 import { USER_SERVICE_SYMBOL } from '@common/constants';
 import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { CreateUserDto } from '@presentation/dto/user.dto';
+import { CreateOfficeDto, CreateUserDto } from '@presentation/dto/user.dto';
 import { IUserService } from '@use-cases/user/user.service.interface';
 
 @Controller('users')
@@ -26,9 +26,9 @@ export class UsersController {
   }
 
   @Post('office')
-  @ApiOperation({ summary: '' })
-  async createOffice() {
-    return this.userService.createOffice();
+  @ApiOperation({ summary: 'Создать офис' })
+  async createOffice(@Body() createOfficeDto: CreateOfficeDto) {
+    return this.userService.createOffice(createOfficeDto);
   }
 
   @Get('user/:login')

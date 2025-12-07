@@ -1,6 +1,10 @@
 import { PrismaService } from '@infrastructure/db/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto, ResponseUserDto } from '@presentation/dto/user.dto';
+import {
+  CreateOfficeDto,
+  CreateUserDto,
+  ResponseUserDto,
+} from '@presentation/dto/user.dto';
 import { User } from '@prisma/client';
 import { IUserService } from '@use-cases/user/user.service.interface';
 
@@ -15,8 +19,12 @@ export class UserService implements IUserService {
     return user;
   }
 
-  async createOffice() {
-    return await this.prismaService.office.create({});
+  async createOffice(createOfficeDto: CreateOfficeDto) {
+    return await this.prismaService.office.create({
+      data: {
+        name: createOfficeDto.name, // Передаем только поле name
+      },
+    });
   }
 
   async findById(id: string): Promise<ResponseUserDto> {
