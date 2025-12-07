@@ -15,6 +15,10 @@ export class UserService implements IUserService {
     return user;
   }
 
+  async createOffice() {
+    return await this.prismaService.office.create({});
+  }
+
   async findById(id: string): Promise<ResponseUserDto> {
     return await this.prismaService.user.findUnique({ where: { id } });
   }

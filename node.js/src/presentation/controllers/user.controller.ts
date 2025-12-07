@@ -25,6 +25,12 @@ export class UsersController {
     return await this.userService.findAll();
   }
 
+  @Post('office')
+  @ApiOperation({ summary: '' })
+  async createOffice() {
+    return this.userService.createOffice();
+  }
+
   @Get('user/:login')
   @ApiQuery({
     name: 'login',

@@ -3,6 +3,7 @@ import { User } from '@prisma/client';
 
 export interface IUserService {
   create(data: CreateUserDto): Promise<User>;
+  createOffice();
   findById(id: string): Promise<ResponseUserDto>;
   findByEmail(email: string): Promise<ResponseUserDto>;
   findByLogin(login: string): Promise<User>;
