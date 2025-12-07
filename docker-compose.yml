@@ -1,0 +1,91 @@
+services:
+  # Database (PostgreSQL)
+  postgres:
+    image: postgres:15-alpine
+    container_name: pupupu-db
+    restart: always
+    environment:
+      POSTGRES_USER: pupupu
+      POSTGRES_PASSWORD: pupupu_secret_password
+      POSTGRES_DB: pupupu_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./node.js/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - pupupu-network
+
+  # Rediska
+  redis:
+    image: redis:alpine
+    container_name: pupupu-redis
+    restart: always
+    volumes:
+      - redis_data:/data
+    networks:
+      - pupupu-network
+
+  # Node.js бэк
+  backend-node:
+    build:
+      context: ./node.js
+      dockerfile: Dockerfile
+    container_name: pupupu-node
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      NODE_ENV: "development"
+      API_PORT: "3000"
+      API_PREFIX: "api"
+
+      # Подключение к БД — совпадает с postgres сервисом
+      POSTGRES_USER: "pupupu"
+      POSTGRES_PASSWORD: "pupupu_secret_password"
+      POSTGRES_DATABASE: "pupupu_db"
+      DATABASE_URL: "postgresql://pupupu:pupupu_secret_password@postgres:5432/pupupu_db?schema=public"
+
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+
+      JWT_SECRET_KEY: "HG@765J_VDJsavdbh&Hf78"
+      JWT_ACCESS_TOKEN_TTL: "1m"
+      JWT_REFRESH_TOKEN_TTL: "6h"
+
+      # Swagger
+      SWAGGER_TITLE: "CyberGarden"
+      SWAGGER_DESCRIPTION: ""
+      SWAGGER_PATH: "docs"
+
+      COOKIE_DOMAIN: "localhost"
+
+      SITE_NAME: "CyberGarden"
+      SITE_DESCRIPTION: ""
+      APP_URL: "http://localhost:3000"
+      ORIGIN_URL: "http://localhost:3001"
+    networks:
+      - pupupu-network
+
+  # .NET AI сервис
+  backend-ai:
+    build:
+      context: ./Asp.Net/PupupuAi
+      dockerfile: Dockerfile
+    container_name: pupupu-ai
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    networks:
+      - pupupu-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  pupupu-network:
+    driver: bridge
